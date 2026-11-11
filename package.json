@@ -1,0 +1,20 @@
+{
+  "name": "pi-tree-graph",
+  "version": "0.2.0",
+  "description": "Session tree visualization and fail-closed Git shadow checkpoints for Pi",
+  "author": "Izziva (derivative of chao)",
+  "keywords": ["pi-package", "pi", "session-tree", "git", "checkpoint"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/izziva/pi-tree-graph"
+  },
+  "files": ["extensions/"],
+  "peerDependencies": {
+    "@earendil-works/pi-tui": "*",
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": ["./extensions"]
+  }
+}
