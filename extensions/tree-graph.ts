@@ -13,7 +13,7 @@
 //
 // 数据源：ctx.sessionManager.getTree() → SessionTreeNode[]（entry/children/label）。
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
@@ -193,7 +193,7 @@ export function mergeDuplicateRows(rows: Row[]): void {
 	}
 }
 
-const isCheckpointEntry = (entry: SessionEntry): boolean =>
+const isCheckpointEntry = (entry: SessionEntry): entry is Extract<SessionEntry, { type: "custom" }> =>
 	entry.type === "custom" && entry.customType === GIT_REF_TYPE;
 
 /**
@@ -797,7 +797,7 @@ export default function (pi: ExtensionAPI) {
 		catch { activeSession = false; }
 	});
 	pi.on("session_shutdown", () => { activeSession = false; });
-	const openTree = async (_args: unknown, ctx: any) => {
+	const openTree = async (_args: string, ctx: ExtensionCommandContext) => {
 		if (!ctx.hasUI) return;
 			if (!activeSession) { ctx.ui.notify("Tree graph is inactive outside Git sessions.", "info"); return; }
 			const sm = ctx.sessionManager;

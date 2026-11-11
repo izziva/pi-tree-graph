@@ -370,13 +370,19 @@ function commitExists(t: Target, hash: string): boolean {
 	}
 }
 
+type EntryRendererRegistration = (
+	this: ExtensionAPI,
+	type: string,
+	renderer: (entry: { data?: unknown }, opts: { expanded: boolean }, theme: { fg: (c: string, s: string) => string }) => Box,
+) => void;
+
 export default function (pi: ExtensionAPI) {
 	// 快照条目在正文里的渲染（无 renderer 时正文直接跳过 custom 条目）；
 	// 方法不存在的老版本 pi 直接跳过，保证扩展主体不受影响。
 	// SAFETY: older host versions omit this optional renderer API; access is guarded below.
 	const registerRenderer = (pi as unknown as Record<string, unknown>)["registerEntryRenderer"];
 	if (typeof registerRenderer === "function") {
-		(registerRenderer as CallableFunction).call(pi, CKPT_REF_TYPE, (entry: { data?: unknown }, opts: { expanded: boolean }, theme: { fg: (c: string, s: string) => string }) => {
+		(registerRenderer as EntryRendererRegistration).call(pi, CKPT_REF_TYPE, (entry: { data?: unknown }, opts: { expanded: boolean }, theme: { fg: (c: string, s: string) => string }) => {
 			const data = (entry.data ?? {}) as { hash?: string; message?: string; label?: string; worktree?: string };
 			const box = new Box(1, 1, (text: string) => theme.fg("dim", text));
 			box.addChild(new Text(`⎇ ${data.hash ?? "?"} ${data.message ?? ""}`.trimEnd()));
